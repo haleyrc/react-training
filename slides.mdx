@@ -36,10 +36,21 @@ Most importantly, handles DOM updates in the quickest way possible
 ├── node_modules
 ├── package.json
 ├── public
-├── README.md
-├── src
-└── yarn.lock
+└── src
 ```
+
+<Notes>
+create-react-app is a utility for bootstrapping a new react project and creates
+most of the boilerplate you need to get going.
+
+node_modules for vendored dependencies
+
+package.json for build scripts, dependency listings, project info
+
+public for static assets and index.html
+
+src for javascript
+</Notes>
 
 ---
 
@@ -66,6 +77,12 @@ Most importantly, handles DOM updates in the quickest way possible
 </html>
 ```
 
+<Notes>
+contains some boilerplate html and a single element under the body with id root
+
+this is where our react application gets mounted
+</Notes>
+
 ---
 
 ### index.js
@@ -78,14 +95,22 @@ ReactDOM.render(<h1>Hello, world!</h1>, document.getElementById("root"))
 ```
 
 <Notes>
-The h1 looks like html, but is actually JSX
+The call to ReactDOM.render mounts the application and takes an element and a
+mount point. You can see the root id again here.
 
-Javascript XML extension to JS syntax, compiled to JS
+The h1 looks like html, but is actually JSX
 </Notes>
 
 ---
 
 ## JSX
+
+<Notes>
+Javascript XML extension to JS syntax, compiled to JS
+
+Other frameworks use things like directives, properties on html elements, but
+JSX lets us write javascript directly in our templates and vice versa
+</Notes>
 
 ---
 
@@ -96,7 +121,10 @@ React.createElement("h1", null, "Hello, world!");
 ```
 
 <Notes>
-JSX elements get compiled to javascript calls that create VDOM elements
+JSX elements get compiled to javascript calls that create VDOM elements. We'll
+see an example of the virtual DOM in action later, but it's basically a secondary
+representation of the DOM that React uses to calculate updates so that the fewest
+elements possible get rerendered.
 
 Takes type, arguments(props) and children
 
@@ -127,6 +155,12 @@ React.createElement(
 );
 ```
 
+<Notes>
+Here we see both props and children being passed in, we'll see more of props in
+a bit, but as we can see with the transpiled version, they're basically arguments
+to createElement
+</Notes>
+
 ---
 
 ### Component Tree
@@ -136,12 +170,22 @@ React.createElement(
 <Notes>
 The elements from the previous slide become this component tree
 
-Important: changes to one div *don't* rerender the other
+Important: changes to one div *don't* rerender the other (VDOM in action)
 </Notes>
 
 ---
 
 ## Components
+
+<Notes>
+The primary building block of React interfaces. Either
+
+A class with a render method that returns JSX
+A function that returns JSX
+
+more on the differences later, but basically it's something that can be rendered
+(though this might not always be visually)
+</Notes>
 
 ---
 
@@ -164,6 +208,14 @@ class UselessCounter extends Component {
 ```
 
 <UselessCounter />
+
+
+<Notes>
+This is a basic class component, it extends the React Component class to get all
+the lifecycle methods, etc.
+
+It has a render method that returns some JSX (remember this is still not HTML)
+</Notes>
 
 ---
 
@@ -191,6 +243,17 @@ class StatefulCounter extends Component {
 
 <StatefulCounter />
 
+<Notes>
+State is any information that needs to be stored in your application.
+
+State exists in a lot of different forms, but the first one you'll
+probably see is local state.
+
+Application state is data, logged in user, a list of vehicles, etc.
+
+UI state is things like IsModalOpen, IsDisabled, etc.
+</Notes>
+
 ---
 
 import {Counter} from './components/Counter'
@@ -216,6 +279,19 @@ class Counter extends Component {
 ```
 
 <Counter />
+
+<Notes>
+State is useful when we can modify it
+
+The buttons take a function to run when clicked, setState updates the state to
+the new value
+
+Why not just change count directly?
+
+Safety and performance. Changing state rerenders, so setState batches state
+updates. If multiple places change state simultaneously, what happens? setState
+applies state updates in order so last write wins.
+</Notes>
 
 ---
 
@@ -245,6 +321,12 @@ class PropsCounter extends Component {
   }
 }
 ```
+
+<Notes>
+Remember, props are arguments to createElement. Get passed to the component.
+
+Change behavior of a component from a parent.
+</Notes>
 
 ---
 
@@ -281,9 +363,25 @@ import { RainbowCounter } from './components/Counter'
 <RainbowCounter step={2}/>
 <RainbowCounter step={20}/>
 
+<Notes>
+Virtual DOM at work
+
+Each counter changes background when render is called for that component
+
+Virtual DOM ensures that only the counter whose state changed rerenders
+</Notes>
+
 ---
 
 ## Lifecycle Methods
+
+<Notes>
+UI elements are rendered immediately. Lifecycle methods let us tap in at various
+points of the rendering/rerendering process to change behavior, etc.
+
+The current way of handling this is using class based components because they
+come with standard lifecycle methods provided by React.
+</Notes>
 
 ---
 
@@ -312,6 +410,18 @@ class MyComponent extends React.Component {
 Constructor can be used to initialize state, but that's usually done as a static
 property now, and binding methods can be avoided with use of arrow functions, so
 not seen much at all in new projects
+
+render we've seen before
+
+componentDidMount is called only after the component is mounted into the DOM.
+At that point it is safe to do async work and state updates, etc.
+
+componentDidUpdate can be used for some components that need to modify how often
+they rerender, but it's difficult to get this right so avoid it unless there is
+no other way.
+
+componentWillUnmount gives us away to clean up things like listeners so that we
+don't end up with memory leaks.
 </Notes>
 
 ---
@@ -344,6 +454,15 @@ class Inventory extends React.Component {
 }
 ```
 
+<Notes>
+This is a fairly standard pattern for loading data from a remote API and then
+rendering once it has been received.
+
+We also see that this component doesn't actually specify how to render and just
+passes the data to another component. This isn't the best way of doing that, but
+separating presentational components and container components is a best practice.
+</Notes>
+
 ---
 
 ### Future
@@ -354,7 +473,15 @@ Hooks (more on this later)
 
 ## Functional Stateless Components
 
-<Notes>Functions that return JSX</Notes>
+<Notes>
+Functions that return JSX
+
+They don't have state*
+
+They don't have lifecycle methods*
+
+Why then? Easy to test. Fast.
+</Notes>
 
 ---
 
@@ -379,6 +506,11 @@ How do you use one?
 <br />
 <Button title="Don't Click Me" />
 
+<Notes>
+They take props like class components, but they receive them as arguments since
+there is no this for a function.
+</Notes>
+
 ---
 
 import { CounterWithButtons } from './components/Counter'
@@ -386,6 +518,10 @@ import { CounterWithButtons } from './components/Counter'
 ### Better Example
 
 <CounterWithButtons />
+
+<Notes>
+Our good friend the counter. Looks exactly the same, but underneath...
+</Notes>
 
 ---
 
@@ -415,6 +551,15 @@ class CounterWithButtons extends Component {
 }
 ```
 
+<Notes>
+We're using our new button component. The button itself doesn't care what the
+title is or what happens when you click it, only that it displays what it gets
+and does what its told (and those become your tests).
+
+Simple example, but imagine Button was actually very complex and handled all
+kinds of other things behind the scenes...like styling.
+</Notes>
+
 ---
 
 ### Aside: CSS In JS
@@ -441,6 +586,27 @@ const StyledButton = ({ title, handleOnClick }) => (
   <ButtonStyles onClick={handleOnClick}>{title}</ButtonStyles>
 )
 ```
+
+<Notes>
+You can style react apps like you style anything else with a big ole CSS file
+and BEM and all that stuff.
+
+React lets you add styles in your components directly and they become inline
+styles (no more !important), but it gets kind of unwieldy and it's not *quite*
+CSS.
+
+Popular options:
+
+Styled components/emotion/glamour/etc.
+CSS Modules
+
+Modules let you reuse the same css identifiers without conflicts in different
+stylesheets.
+
+Styled components let you wrap existing components using a special syntax and
+then use those the same way you would a regular react component. Mostly personal
+preference, but both have some tradeoffs.
+</Notes>
 
 ---
 
@@ -470,6 +636,12 @@ class CounterWithPrettyButtons extends Component {
 }
 ```
 
+<Notes>
+Can now use styled button anywhere we need a button and get consistent design.
+
+Build your design system in react.
+</Notes>
+
 ---
 
 import { CounterWithPrettyButtons } from './components/Counter'
@@ -481,6 +653,15 @@ import { CounterWithPrettyButtons } from './components/Counter'
 ---
 
 ## Hooks
+
+<Notes>
+(Very) new feature. Address some shortcomings of previous syntax and add a lot
+more utility to SFCs.
+
+Purpose built functions for handling things like effects, state, context, etc.
+
+Weren't in React mainline when sidekick written, will be in frazer web.
+</Notes>
 
 ---
 
@@ -503,6 +684,12 @@ const SelfAwareButton = () => {
 
 <SelfAwareButton />
 
+<Notes>
+Remember functions can't have state because they don't have properties. useState
+lets you declare a piece of state that gets persisted between calls. Returns
+the current state and a setter (like setState). Boom. State in your SFC.
+</Notes>
+
 ---
 
 ### useEffect
@@ -518,6 +705,18 @@ useEffect(() => {
   };
 }, []);
 ```
+
+<Notes>
+useEffect is a little harder to demonstrate and understand, but basically it
+lets you perform actions with side effects on mount *and* update (replaces two
+class lifecycle methods).
+
+The return value is a cleanup function that gets called on unmount (replaces yet
+another lifecycle method).
+
+Second argument is an array of properties that have to change to call useeffect
+again to prevent it calling more than once (empty array means don't rerun it).
+</Notes>
 
 ---
 
@@ -541,9 +740,13 @@ const App = () => {
 ```
 
 <Notes>
+context lets you avoid prop drilling (pass a prop just to pass a prop, etc., etc.)
+
 Create context near top of the app
 
 Wrap entire app in provider
+
+Use consumer where you need it to get the value
 </Notes>
 
 ---
@@ -564,7 +767,13 @@ const SecureDiv = () => (
 )
 ```
 
-<Notes>When you need the value, use the consumer and a render prop</Notes>
+<Notes>
+Old API was kind of clunky and involved an extra level of nesting everywhere you
+needed to consume.
+
+Uses render props which are functional but difficult to parse and create lots of
+nesting if you need more than one context
+</Notes>
 
 ---
 
@@ -581,6 +790,61 @@ const SecureDiv = () => {
 }
 ```
 
+<Notes>
+The hooks version just takes the entire Context object and returns the current
+value
+</Notes>
+
 ---
 
 <App />
+
+----
+
+## Advanced Concepts
+
+<Notes>Not part of React proper, but worth mentioning</Notes>
+
+---
+
+### Redux
+
+Actions, reducers, and stores. Oh my.
+
+<Notes>
+State management library
+
+Used for state that needs to be available to the entire application (or should be)
+
+Uses context under the hood
+
+Similar to setState, manages state updates in a central location.
+
+Also similar to a game loop. Components dispatch actions with some payload,
+the reducer listens for actions and returns a modified copy of state in response.
+
+State is never mutated, always copied. Time traveling, etc.
+
+Somewhat complicated learning curve, can *usually* be obviated, especially now
+with hooks.
+</Notes>
+
+---
+
+### Routing
+
+Not part of React proper
+
+Popular options:
+
+- React Navigation
+- React Router
+- Reach Router
+
+<Notes>
+Go with either React Navigation (tried and trued) or Reach Router (the new hotness).
+</Notes>
+
+---
+
+# Thanks for coming!
