@@ -8,6 +8,9 @@ const theme = {
   },
   pre: {
     fontSize: "24px"
+  },
+  a: {
+    fontSize: "24px"
   }
 }
 
