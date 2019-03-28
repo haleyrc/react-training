@@ -1,4 +1,4 @@
 {
   "version": 2,
-  "builds": [{ "src": "slides.mdx", "use": "@now/mdx-deck" }]
+  "builds": [{ "src": "package.json", "use": "@now/static-build" }]
 }

@@ -1,10 +1,15 @@
 {
-  "name": "react-quick-start",
+  "name": "react-training",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "mdx-deck slides.mdx"
+    "start": "mdx-deck slides.mdx",
+    "build": "npm run now-build",
+    "build:presentation": "mdx-deck build slides.mdx --no-html",
+    "build:images": "cp -r public dist/",
+    "now-build": "npm run build:presentation && npm run build:images",
+    "deploy": "now"
   },
   "author": "",
   "license": "ISC",
