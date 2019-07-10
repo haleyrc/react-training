@@ -1,11 +1,7 @@
 import React, { useState } from "react"
 import styled from "styled-components"
 
-const Button = ({ title, handleOnClick }) => (
-  <button onClick={handleOnClick}>{title}</button>
-)
-
-const ButtonStyles = styled.button`
+const StyledButton = styled.button`
   background: #ffd600;
   font-size: 28px;
   font-weight: bold;
@@ -22,18 +18,13 @@ const ButtonStyles = styled.button`
   }
 `
 
-const StyledButton = ({ title, handleOnClick }) => (
-  <ButtonStyles onClick={handleOnClick}>{title}</ButtonStyles>
-)
-
 const SelfAwareButton = () => {
   const [clicked, setClicked] = useState(0)
   return (
-    <StyledButton
-      handleOnClick={() => setClicked(clicked + 1)}
-      title={`Clicked ${clicked} times.`}
-    />
+    <StyledButton onClick={() => setClicked(clicked + 1)}>
+      {"Clicked " + clicked + " times."}
+    </StyledButton>
   )
 }
 
-export { Button, StyledButton, SelfAwareButton }
+export { StyledButton, SelfAwareButton }

@@ -24,10 +24,9 @@ const SecureDiv = () => {
 }
 
 const Toggle = ({ isLoggedIn, onToggle }) => (
-  <StyledButton
-    handleOnClick={onToggle}
-    title={isLoggedIn ? "Log Out" : "Log In"}
-  />
+  <StyledButton onClick={onToggle}>
+    {isLoggedIn ? "Log Out" : "Log In"}
+  </StyledButton>
 )
 
 export default App
